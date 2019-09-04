@@ -10,9 +10,13 @@
 # Google's Python Class
 # http://code.google.com/edu/languages/google-python-class/
 
+
+
 import sys
 import re
 import argparse
+
+__author__="mosaafir74 with instructor help"
 
 """
 Define the extract_names() function below and change main()
@@ -45,22 +49,23 @@ def extract_names(filename):
     followed by the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
-    # +++your code here+++
+
     with open(filename,'r') as f:
         text = f.read()
     year = re.findall(r'Popularity\sin\s(\d\d\d\d)', text)[0]
     names = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', text)
-    updated_names = []
-    for name in names:
-        girl_name, boy_name, rank = name[2], name[1], name[0]
-        updated_names.append('{} {}'.format(girl_name, rank))
-        updated_names.append('{} {}'.format(boy_name, rank))
-    updated_names.sort()
-    results = [year] + updated_names
-    text = '\n'.join(results) + '\n'
-    return text
-# - year:  `r'Popularity\sin\s(\d\d\d\d)`
-# - names: `r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>'`
+    name_rank_dict = {}
+    for rank, boy_name, girl_name in names:
+        name_rank_dict[boy_name] = rank
+        name_rank_dict[girl_name] = rank
+    # At this point, the name_rank_dict is complete, but not sorted
+    # Build the final sorted result list
+    result = [year]
+    for name in sorted(name_rank_dict.keys()):
+        result.append('{} {}'.format(name, name_rank_dict[name]))
+
+    return result
+
 
 
 def create_parser():
@@ -73,6 +78,7 @@ def create_parser():
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
     return parser
 
+'''I will wait for your audio in Zoom Room'''
 
 def main():
     parser = create_parser()
@@ -87,11 +93,10 @@ def main():
     # option flag
     create_summary = args.summaryfile
 
-    # +++your code here+++
     # For each filename, get the names, then either print the text output
     # or write it to a summary file
     for file_ in file_list:
-        text = extract_names(file_)
+        text = '\n'.join(extract_names(file_)) + '\n'
         if not create_summary:
             print(text)
         else:
