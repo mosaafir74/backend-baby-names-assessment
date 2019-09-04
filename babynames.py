@@ -46,7 +46,21 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
     # +++your code here+++
-    return
+    with open(filename,'r') as f:
+        text = f.read()
+    year = re.findall(r'Popularity\sin\s(\d\d\d\d)', text)[0]
+    names = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', text)
+    updated_names = []
+    for name in names:
+        girl_name, boy_name, rank = name[2], name[1], name[0]
+        updated_names.append('{} {}'.format(girl_name, rank))
+        updated_names.append('{} {}'.format(boy_name, rank))
+    updated_names.sort()
+    results = [year] + updated_names
+    text = '\n'.join(results) + '\n'
+    return text
+# - year:  `r'Popularity\sin\s(\d\d\d\d)`
+# - names: `r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>'`
 
 
 def create_parser():
@@ -76,6 +90,14 @@ def main():
     # +++your code here+++
     # For each filename, get the names, then either print the text output
     # or write it to a summary file
+    for file_ in file_list:
+        text = extract_names(file_)
+        if not create_summary:
+            print(text)
+        else:
+            with open(file_ + '.summary', 'w') as f:
+                f.write(text)
+
 
 
 if __name__ == '__main__':
